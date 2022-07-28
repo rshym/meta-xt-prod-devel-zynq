@@ -1,0 +1,265 @@
+desc: "Xen-Troops development setup for Xilinx Zynq UltraScale+ MPSoC hardware"
+min_ver: "0.8"
+
+variables:
+  YOCTOS_WORK_DIR: "yocto"
+  DOM0_BUILD_DIR: "build-dom0"
+  DOMZ_DIR: "zephyr"
+  XT_XEN_DTB_NAME: "%{SOC_FAMILY}-%{MACHINE}-xen.dtb"
+  XT_DOMZ_TAG: ""
+  # For this product we use one config for all machines for Zephyr
+  XT_DOMZ_CONFIG_NAME: "domz-generic.cfg"
+  REVISION_OF_RELEASE: "rel-v2021.2"
+  XT_PMU_ROM_DIR: "%{YOCTOS_WORK_DIR}/../../PMU_ROM"
+common_data:
+  # Common configuration options for all yocto-based domains
+  conf: &COMMON_CONF
+    - [SSTATE_DIR, "${TOPDIR}/../../../common_data/sstate"]
+    - [DL_DIR, "${TOPDIR}/../../../common_data/downloads"]
+
+components:
+  dom0:
+    build-dir: "%{YOCTOS_WORK_DIR}"
+    default: true
+    sources:
+      # List of repositories is taken from
+      # https://github.com/Xilinx/yocto-manifests/blob/rel-v2021.2/default.xml
+      # commit bdedc60
+      - type: git
+        url: "https://github.com/Xilinx/meta-browser"
+        rev: "1bff166b36072a8cacc0f29f02de5fa9748824e9"
+      - type: git
+        url: "https://github.com/Xilinx/meta-clang"
+        rev: "fbb032bfc535e0ed3127c171d4236a97d51c16df"
+      - type: git
+        url: "https://github.com/Xilinx/meta-jupyter"
+        rev: "f7cc19272a3512cd4a7d82fe5ca15b6dc0953a8d"
+      - type: git
+        url: "https://github.com/Xilinx/meta-linaro"
+        rev: "11091b487e1ad4c6a4adfac34d958a3d9d9ccd17"
+      - type: git
+        url: "https://github.com/Xilinx/meta-mingw"
+        rev: "352d8b0aa3c7bbd5060a4cc2ebe7c0e964de4879"
+      - type: git
+        url: "https://github.com/Xilinx/meta-openamp"
+        rev: "670161c5d246ba6af293e274b7fd5b34f9a44701"
+      - type: git
+        url: "https://github.com/Xilinx/meta-openembedded"
+        rev: "29ca52c7826ad3044b53ccb5224016bd73abdb5c"
+      - type: git
+        url: "https://github.com/Xilinx/meta-petalinux"
+        rev: "7beb44d59e848fec5959a571b2bb1ba2c2c18646"
+      - type: git
+        url: "https://github.com/Xilinx/meta-python2"
+        rev: "d9662a41f67c3425a356bce4ec29f82058127344"
+      - type: git
+        url: "https://github.com/Xilinx/meta-qt5"
+        rev: "2b33a5d5e888370bb56685b86aa82b73624f19f0"
+      - type: git
+        url: "https://github.com/Xilinx/meta-security"
+        rev: "3daf99fd138b0eebe864bbe1b9c71241d97c4512"
+      - type: git
+        url: "https://github.com/Xilinx/meta-som"
+        rev: "23c3895992f5c7f4b60525bf12816feb1ba20040"
+      - type: git
+        url: "https://github.com/Xilinx/meta-virtualization"
+        rev: "1ae227b0c9c9e99681cb8d83232811ba6dd03b58"
+      - type: git
+        url: "https://github.com/Xilinx/meta-vitis-ai"
+        rev: "96b90b346ade8c36d7e911b6ce21fd41a77108ba"
+      - type: git
+        url: "https://github.com/Xilinx/meta-xilinx"
+        rev: "054cb2cb4c3ffe868ade68369433027989571cf6"
+      - type: git
+        url: "https://github.com/Xilinx/meta-xilinx-tools"
+        rev: "9be31b43df41ec245f969c2fc65f56c6e910d752"
+      - type: git
+        url: "https://github.com/Xilinx/poky"
+        rev: "1a07bce883aa05bb2fcf412384c671ace7a6e23f"
+      - type: git
+        url: "https://github.com/Xilinx/yocto-manifests"
+        rev: "rel-v2021.2"
+      - type: git
+        url: "https://github.com/Xilinx/yocto-scripts"
+        rev: "484bd017441f0d895f7d24a82192acdf497408a8"
+      - type: git
+        url: "git@github.com:rshym/meta-xt-prod-devel-zynq.git"
+        rev: "main"
+    builder:
+      type: yocto
+      work_dir: "%{DOM0_BUILD_DIR}"
+      conf:
+        - *COMMON_CONF
+        - [MACHINE, "zcu102-zynqmp"]
+        - [DISTRO, "petalinux"]
+        # Add alternative mirrors for some components
+        #- [INHERIT:append, " plnx-mirrors"]
+        #- [DISTRO_FEATURES:append, " xen"]
+        #- [DISTRO_FEATURES:append, " virtualization"]
+        #- [IMAGE_FEATURES:append, " ssh-server-dropbear"]
+        #- [IMAGE_INSTALL:append, " busybox xen-tools qemu zlib-dev screen util-linux-prlimit"]
+        #- [ASSUME_PROVIDED:append, "iasl-native"]
+        #- [PACKAGECONFIG:pn-qemu:append, " virtfs xen fdt"]
+        #- [PACKAGECONFIG:remove:pn-xen, " sdl"]
+        - [XT_DOMZ_CONFIG_NAME, "%{XT_DOMZ_CONFIG_NAME}"]
+        - [XT_DOM_NAME, "dom0"]
+        - [XT_GUEST_INSTALL, "%{XT_DOMZ_TAG}"]
+        # pmu-rom.elf is obtained from SRC_URI from
+        # meta-xilinx/meta-xilinx-core/recipes-bsp/pmu-firmware/pmu-rom-native_2022.1.bb
+        - [PMU_ROM, "%{XT_PMU_ROM_DIR}/pmu-rom.elf"]
+
+      layers:
+        # list of layers is from meta-petalinux/conf/bblayers.conf.sample
+        # obtained by revision from `sources` above
+        - "../meta-openembedded/meta-perl"
+        - "../meta-openembedded/meta-python"
+        - "../meta-openembedded/meta-filesystems"
+        - "../meta-openembedded/meta-gnome"
+        - "../meta-openembedded/meta-multimedia"
+        - "../meta-openembedded/meta-networking"
+        - "../meta-openembedded/meta-webserver"
+        - "../meta-openembedded/meta-xfce"
+        - "../meta-openembedded/meta-initramfs"
+        - "../meta-openembedded/meta-oe"
+        - "../meta-clang"
+        - "../meta-browser/meta-chromium"
+        - "../meta-qt5"
+        - "../meta-xilinx/meta-microblaze"
+        - "../meta-xilinx/meta-xilinx-bsp"
+        - "../meta-xilinx/meta-xilinx-pynq"
+        - "../meta-xilinx/meta-xilinx-contrib"
+        - "../meta-xilinx/meta-xilinx-standalone"
+        - "../meta-xilinx-tools"
+        - "../meta-petalinux"
+        - "../meta-virtualization"
+        - "../meta-openamp"
+        - "../meta-jupyter"
+        - "../meta-vitis-ai"
+        - "../meta-python2"
+        - "../meta-som"
+        - "../meta-security"
+        - "../meta-security/meta-tpm"
+        - "../meta-xt-prod-devel-zynq/meta-xt-dom0"
+        - "../meta-xt-prod-devel-zynq/meta-xt-control-domain"
+
+      build_target: xen-image-minimal
+      #external_src:
+      #  see ENABLE_ZEPHYR below
+      #additional_deps:
+      #  see ENABLE_ZEPHYR below
+      target_images:
+        # all paths are relative to %{DOM0_BUILD_DIR}
+        - "tmp/deploy/images/%{MACHINE}/atf-uboot.ub"
+        - "tmp/deploy/images/%{MACHINE}/boot.scr"
+        - "tmp/deploy/images/%{MACHINE}/Image"
+        - "tmp/deploy/images/%{MACHINE}/system.dtb"
+        - "tmp/deploy/images/%{MACHINE}/u-boot.bin"
+        - "tmp/deploy/images/%{MACHINE}/uEnv.txt"
+        - "tmp/deploy/images/%{MACHINE}/zynqmp-zcu102-rev1.0.dtb"
+        - "tmp/deploy/images/%{MACHINE}/xen.ub"
+        # rootfs
+        - "tmp/deploy/images/%{MACHINE}/xen-image-minimal-%{MACHINE}.ext4"
+
+
+
+  zephyr:
+    build-dir: "%{DOMZ_DIR}"
+    sources:
+      - type: west
+        #url: https://github.com/sstabellini/zephyr
+        #rev: elc22
+        url: git@github.com:rshym/zephyr.git
+        #rev: rebased_elc22
+    builder:
+      type: zephyr
+      board: xenvm
+      target: samples/hello_world
+      target_images:
+        - "zephyr/build/zephyr/zephyr.bin"
+
+images:
+  full:
+    type: gpt
+    image_size: 512 MiB
+    desc: "Full SD-card/eMMC image"
+    partitions:
+      boot:
+        gpt_type: EBD0A0A2-B9E5-4433-87C0-68B6B72699C7 # Windows Basic data partition
+        type: vfat
+        files:
+          "atf-uboot.ub": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/atf-uboot.ub"
+          "boot.scr": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/boot.scr"
+          "Image": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/Image"
+          "system.dtb": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/system.dtb"
+          "u-boot.bin": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/u-boot.bin"
+          "uEnv.txt": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/uEnv.txt"
+          "zynqmp-zcu102-rev1.0.dtb": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/zynqmp-zcu102-rev1.0.dtb"
+          "xen.ub": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/xen.ub"
+      dom0_rootfs:
+        gpt_type: c7585248-d0b9-4bfb-9a30-2cfdfe16dc4e # Linux
+        type: raw_image
+        image_path: "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/xen-image-minimal-%{MACHINE}.ext4"
+
+parameters:
+  # Machines
+  MACHINE:
+    desc: "Zynq UltraScale+ MPSoC based device"
+    zcu102-zynqmp:
+      default: true
+      overrides:
+        variables:
+          MACHINE: "zcu102-zynqmp"
+          SOC_FAMILY: "XCZU9EG"
+          XT_XEN_DTB_NAME: "-%{MACHINE}-xen.dtb"
+
+  ENABLE_ZEPHYR:
+    desc: "Build Zephyr as guest domain"
+    "no":
+      # nothing to add
+      overrides:
+        variables:
+          XT_DOMZ_TAG: ""
+    "yes":
+      default: true
+      overrides:
+        variables:
+          XT_DOMZ_TAG: "domz"
+        components:
+          dom0:
+            builder:
+              additional_deps:
+                # paths relative to dom0 build-dir
+                - "../%{DOMZ_DIR}/zephyr/build/zephyr/zephyr.bin"
+              external_src:
+                # path relative to folder containing build.ninja
+                domz: "%{DOMZ_DIR}/zephyr/build/zephyr"
+
+
+  # If we run under QEMU, we need to add additional binaries to full image
+  ENABLE_QEMU:
+    desc: "Enable use of inage under QEMU"
+    "yes":
+      default: true
+      overrides:
+        components:
+          dom0:
+            builder:
+              target_images:
+                # qemu related targets
+                - "tmp/deploy/images/%{MACHINE}/qemu-hw-devicetrees/multiarch/zcu102-arm.dtb"
+                - "tmp/deploy/images/%{MACHINE}/qemu-hw-devicetrees/multiarch/zynqmp-pmu.dtb"
+                - "tmp/deploy/images/%{MACHINE}/arm-trusted-firmware.elf"
+                - "tmp/deploy/images/%{MACHINE}/u-boot.elf"
+                - "tmp/deploy/images/%{MACHINE}/pmu-firmware-zcu102-zynqmp.elf"
+        images:
+          full:
+            partitions:
+              boot:
+                files:
+                  "zcu102-arm.dtb": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/qemu-hw-devicetrees/multiarch/zcu102-arm.dtb"
+                  "zynqmp-pmu.dtb": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/qemu-hw-devicetrees/multiarch/zynqmp-pmu.dtb"
+                  "arm-trusted-firmware.elf": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/arm-trusted-firmware.elf"
+                  "u-boot.elf": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/u-boot.elf"
+                  "pmu-rom.elf": "%{XT_PMU_ROM_DIR}/pmu-rom.elf"
+                  "pmu-firmware-zcu102-zynqmp.elf": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/pmu-firmware-zcu102-zynqmp.elf"
+
