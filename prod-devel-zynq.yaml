@@ -10,7 +10,7 @@ variables:
   # For this product we use one config for all machines for Zephyr
   XT_DOMZ_CONFIG_NAME: "domz-generic.cfg"
   REVISION_OF_RELEASE: "rel-v2021.2"
-  XT_PMU_ROM_DIR: "%{YOCTOS_WORK_DIR}/../../PMU_ROM"
+  XT_PMU_ROM_DIR: "/mnt/t1/builds/PMU_ROM"
 common_data:
   # Common configuration options for all yocto-based domains
   conf: &COMMON_CONF
@@ -150,7 +150,7 @@ components:
       target_images:
         # all paths are relative to %{DOM0_BUILD_DIR}
         - "tmp/deploy/images/%{MACHINE}/atf-uboot.ub"
-        - "tmp/deploy/images/%{MACHINE}/boot.scr"
+        - "tmp/deploy/images/%{MACHINE}/boot_xen.scr"
         - "tmp/deploy/images/%{MACHINE}/Image"
         - "tmp/deploy/images/%{MACHINE}/system.dtb"
         - "tmp/deploy/images/%{MACHINE}/u-boot.bin"
@@ -188,7 +188,7 @@ images:
         type: vfat
         files:
           "atf-uboot.ub": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/atf-uboot.ub"
-          "boot.scr": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/boot.scr"
+          "boot.scr": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/boot_xen.scr"
           "Image": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/Image"
           "system.dtb": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/system.dtb"
           "u-boot.bin": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/u-boot.bin"
