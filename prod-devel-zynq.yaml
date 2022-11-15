@@ -9,8 +9,7 @@ variables:
   XT_DOMZ_TAG: ""
   # For this product we use one config for all machines for Zephyr
   XT_DOMZ_CONFIG_NAME: "domz-generic.cfg"
-  REVISION_OF_RELEASE: "rel-v2021.2"
-  XT_PMU_ROM_DIR: "/mnt/t1/builds/PMU_ROM"
+  REVISION_OF_RELEASE: "rel-v2022.2"
 common_data:
   # Common configuration options for all yocto-based domains
   conf: &COMMON_CONF
@@ -23,65 +22,68 @@ components:
     default: true
     sources:
       # List of repositories is taken from
-      # https://github.com/Xilinx/yocto-manifests/blob/rel-v2021.2/default.xml
-      # commit bdedc60
+      # https://github.com/Xilinx/yocto-manifests/blob/rel-v2022.2/default.xml
+      # commit 39cab8602eb148669136025cdd33b851c3872200
       - type: git
         url: "https://github.com/Xilinx/meta-browser"
-        rev: "1bff166b36072a8cacc0f29f02de5fa9748824e9"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/meta-clang"
-        rev: "fbb032bfc535e0ed3127c171d4236a97d51c16df"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/meta-jupyter"
-        rev: "f7cc19272a3512cd4a7d82fe5ca15b6dc0953a8d"
-      - type: git
-        url: "https://github.com/Xilinx/meta-linaro"
-        rev: "11091b487e1ad4c6a4adfac34d958a3d9d9ccd17"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/meta-mingw"
-        rev: "352d8b0aa3c7bbd5060a4cc2ebe7c0e964de4879"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/meta-openamp"
-        rev: "670161c5d246ba6af293e274b7fd5b34f9a44701"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/meta-openembedded"
-        rev: "29ca52c7826ad3044b53ccb5224016bd73abdb5c"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/meta-petalinux"
-        rev: "7beb44d59e848fec5959a571b2bb1ba2c2c18646"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/meta-python2"
-        rev: "d9662a41f67c3425a356bce4ec29f82058127344"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/meta-qt5"
-        rev: "2b33a5d5e888370bb56685b86aa82b73624f19f0"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/meta-security"
-        rev: "3daf99fd138b0eebe864bbe1b9c71241d97c4512"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/meta-som"
-        rev: "23c3895992f5c7f4b60525bf12816feb1ba20040"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/meta-virtualization"
-        rev: "1ae227b0c9c9e99681cb8d83232811ba6dd03b58"
-      - type: git
-        url: "https://github.com/Xilinx/meta-vitis-ai"
-        rev: "96b90b346ade8c36d7e911b6ce21fd41a77108ba"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/meta-xilinx"
-        rev: "054cb2cb4c3ffe868ade68369433027989571cf6"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/meta-xilinx-tools"
-        rev: "9be31b43df41ec245f969c2fc65f56c6e910d752"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/poky"
-        rev: "1a07bce883aa05bb2fcf412384c671ace7a6e23f"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/yocto-manifests"
-        rev: "rel-v2021.2"
+        rev: "rel-v2022.2"
       - type: git
         url: "https://github.com/Xilinx/yocto-scripts"
-        rev: "484bd017441f0d895f7d24a82192acdf497408a8"
+        rev: "rel-v2022.2"
+      - type: git
+        url: "https://github.com/Xilinx/meta-ros"
+        rev: "rel-v2022.2"
+      - type: git
+        url: "https://github.com/Xilinx/meta-xilinx-tsn"
+        rev: "rel-v2022.2"
+      - type: git
+        url: "https://github.com/Xilinx/meta-vitis"
+        rev: "rel-v2022.2"
       - type: git
         url: "git@github.com:rshym/meta-xt-prod-devel-zynq.git"
         rev: "main"
@@ -104,9 +106,6 @@ components:
         - [XT_DOMZ_CONFIG_NAME, "%{XT_DOMZ_CONFIG_NAME}"]
         - [XT_DOM_NAME, "dom0"]
         - [XT_GUEST_INSTALL, "%{XT_DOMZ_TAG}"]
-        # pmu-rom.elf is obtained from SRC_URI from
-        # meta-xilinx/meta-xilinx-core/recipes-bsp/pmu-firmware/pmu-rom-native_2022.1.bb
-        - [PMU_ROM, "%{XT_PMU_ROM_DIR}/pmu-rom.elf"]
 
       layers:
         # list of layers is from meta-petalinux/conf/bblayers.conf.sample
@@ -125,24 +124,30 @@ components:
         - "../meta-browser/meta-chromium"
         - "../meta-qt5"
         - "../meta-xilinx/meta-microblaze"
+        - "../meta-xilinx/meta-xilinx-core"
         - "../meta-xilinx/meta-xilinx-bsp"
         - "../meta-xilinx/meta-xilinx-pynq"
         - "../meta-xilinx/meta-xilinx-contrib"
         - "../meta-xilinx/meta-xilinx-standalone"
+        - "../meta-xilinx/meta-xilinx-vendor"
         - "../meta-xilinx-tools"
         - "../meta-petalinux"
         - "../meta-virtualization"
         - "../meta-openamp"
         - "../meta-jupyter"
-        - "../meta-vitis-ai"
+        - "../meta-vitis"
         - "../meta-python2"
         - "../meta-som"
         - "../meta-security"
         - "../meta-security/meta-tpm"
+        - "../meta-xilinx-tsn"
+        - "../meta-ros/meta-ros-common"
+        - "../meta-ros/meta-ros2"
+        - "../meta-ros/meta-ros2-humble"
         - "../meta-xt-prod-devel-zynq/meta-xt-dom0"
         - "../meta-xt-prod-devel-zynq/meta-xt-control-domain"
 
-      build_target: xen-image-minimal
+      build_target: petalinux-image-minimal
       #external_src:
       #  see ENABLE_ZEPHYR below
       #additional_deps:
@@ -260,6 +265,6 @@ parameters:
                   "zynqmp-pmu.dtb": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/qemu-hw-devicetrees/multiarch/zynqmp-pmu.dtb"
                   "arm-trusted-firmware.elf": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/arm-trusted-firmware.elf"
                   "u-boot.elf": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/u-boot.elf"
-                  "pmu-rom.elf": "%{XT_PMU_ROM_DIR}/pmu-rom.elf"
+                  #"pmu-rom.elf": "%{XT_PMU_ROM_DIR}/pmu-rom.elf"
                   "pmu-firmware-zcu102-zynqmp.elf": "%{YOCTOS_WORK_DIR}/%{DOM0_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/pmu-firmware-zcu102-zynqmp.elf"
 
