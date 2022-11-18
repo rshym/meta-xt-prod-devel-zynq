@@ -220,12 +220,12 @@ parameters:
   ENABLE_ZEPHYR:
     desc: "Build Zephyr as guest domain"
     "no":
+      default: true
       # nothing to add
       overrides:
         variables:
           XT_DOMZ_TAG: ""
     "yes":
-      default: true
       overrides:
         variables:
           XT_DOMZ_TAG: "domz"
@@ -243,8 +243,9 @@ parameters:
   # If we run under QEMU, we need to add additional binaries to full image
   ENABLE_QEMU:
     desc: "Enable use of inage under QEMU"
-    "yes":
+    "no":
       default: true
+    "yes":
       overrides:
         components:
           dom0:
