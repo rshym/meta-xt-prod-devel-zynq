@@ -10,8 +10,8 @@ DEPENDS:append = " dtc-native"
 
 do_compile:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'xen', 'true', 'false', d)}; then
-        #${DEPLOY_DIR_IMAGE}/uboot-script-gen -c "${WORKDIR}/xen_uboot.cfg" -d "${DEPLOY_DIR_IMAGE}" -t "load mmc 0:1" -o "${B}/boot_xen"
-        mkimage -A arm -T script -C none -n "Boot script" -d "${WORKDIR}/xen_uboot.cfg" boot_xen.scr
+        ${DEPLOY_DIR_IMAGE}/uboot-script-gen -c "${WORKDIR}/xen_uboot.cfg" -d "${DEPLOY_DIR_IMAGE}" -t "load mmc 0:1" -o "${B}/boot_xen"
+        #mkimage -A arm -T script -C none -n "Boot script" -d "${WORKDIR}/xen_uboot.cfg" boot_xen.scr
     fi
 }
 
