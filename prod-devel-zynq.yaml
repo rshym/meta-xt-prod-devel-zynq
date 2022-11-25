@@ -149,7 +149,7 @@ components:
         - "../meta-xt-prod-devel-zynq/meta-xt-dom0"
         - "../meta-xt-prod-devel-zynq/meta-xt-control-domain"
 
-      build_target: petalinux-image-minimal
+      build_target: xen-image-minimal
       #external_src:
       #  see ENABLE_ZEPHYR below
       #additional_deps:
@@ -163,7 +163,7 @@ components:
         - "tmp/deploy/images/%{MACHINE}/u-boot.bin"
         - "tmp/deploy/images/%{MACHINE}/uEnv.txt"
         - "tmp/deploy/images/%{MACHINE}/zynqmp-zcu102-rev1.0.dtb"
-        - "tmp/deploy/images/%{MACHINE}/xen.ub"
+        #- "tmp/deploy/images/%{MACHINE}/xen.ub"
         # rootfs
         - "tmp/deploy/images/%{MACHINE}/xen-image-minimal-%{MACHINE}.ext4"
 
